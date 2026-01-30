@@ -1,4 +1,7 @@
-import {
+import type {
+	IAuthenticateGeneric,
+	Icon,
+	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
 } from 'n8n-workflow';
@@ -7,6 +10,8 @@ export class QontoApi implements ICredentialType {
 	name = 'qontoApi';
 	displayName = 'Qonto API';
 	documentationUrl = 'https://api-doc.qonto.com/docs/business-api';
+	icon: Icon = 'file:../icons/qonto.svg';
+	
 	properties: INodeProperties[] = [
 		{
 			displayName: 'Environment Type',
@@ -57,4 +62,21 @@ export class QontoApi implements ICredentialType {
 			description: 'Required for Machine-to-Machine access in sandbox environment',
 		},
 	];
+
+	authenticate: IAuthenticateGeneric = {
+		type: 'generic',
+		properties: {
+			headers: {
+				Authorization: '={{$credentials.login}}:{{$credentials.secretKey}}',
+			},
+		},
+	};
+
+	test: ICredentialTestRequest = {
+		request: {
+			baseURL: '={{$credentials.environment === "sandbox" ? "https://thirdparty-sandbox.staging.qonto.co/v2" : "https://thirdparty.qonto.com/v2"}}',
+			url: '/organization',
+			method: 'GET',
+		},
+	};
 }

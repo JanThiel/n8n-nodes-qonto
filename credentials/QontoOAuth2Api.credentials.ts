@@ -1,10 +1,12 @@
-import { ICredentialType, INodeProperties } from 'n8n-workflow';
+import type { Icon, ICredentialType, INodeProperties } from 'n8n-workflow';
 
 export class QontoOAuth2Api implements ICredentialType {
 	name = 'qontoOAuth2Api';
 	extends = ['oAuth2Api'];
 	displayName = 'Qonto OAuth2 API';
 	documentationUrl = 'https://api-doc.qonto.com/docs/business-api';
+	icon: Icon = 'file:../icons/qonto.svg';
+	
 	properties: INodeProperties[] = [
 		{
 			displayName: 'Environment Type',

@@ -17,7 +17,7 @@ import {
  * @param {string} endpoint
  * @param {IDataObject} body
  * @param {IDataObject} query
- * @returns {Promise<any>}
+ * @returns {Promise<IDataObject>}
  */
 export async function qontoApiRequest(
 	this: IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
@@ -27,7 +27,7 @@ export async function qontoApiRequest(
 	body: IDataObject = {},
 	query: IDataObject = {},
 	isFileUpload: boolean = false,
-): Promise<any> {
+): Promise<IDataObject> {
 	const authenticationMethod = this.getNodeParameter('authentication', 0) as string;
 	const credentials = await this.getCredentials(authenticationMethod === 'logKey' ? 'qontoApi' : 'qontoOAuth2Api');
 
@@ -97,7 +97,7 @@ export async function handleListing(
 	i: number,
 ): Promise<IDataObject[]> {
 	const returnData: IDataObject[] = [];
-	let responseData;
+	let responseData: IDataObject;
 
 	const returnAll = this.getNodeParameter('returnAll', i) as boolean;
 	const limit = this.getNodeParameter('limit', i, 0) as number;
@@ -105,7 +105,8 @@ export async function handleListing(
 	query.current_page = 1;
 
 	try {
-		do {
+		let hasMorePages = true;
+		while (hasMorePages) {
 			responseData = await qontoApiRequest.call(this, headers, method, endpoint, body, query);
 
 			if (!responseData[endpoint]) {
@@ -114,14 +115,21 @@ export async function handleListing(
 				});
 			}
 
-			returnData.push(...responseData[endpoint]);
+			const items = responseData[endpoint] as IDataObject[];
+			returnData.push(...items);
 
 			if (!returnAll && returnData.length >= limit) {
 				return returnData.slice(0, limit);
 			}
 
 			query.current_page++;
-		} while (responseData.meta.current_page < responseData.meta.total_pages);
+			
+			const responseMetadata = responseData.meta as IDataObject | undefined;
+			if (!responseMetadata || 
+			    (responseMetadata.current_page as number) >= (responseMetadata.total_pages as number)) {
+				hasMorePages = false;
+			}
+		}
 
 		return returnData;
 	} catch (error) {

@@ -6,10 +6,6 @@ import {
 	IExecuteFunctions,
 } from 'n8n-workflow';
 
-import { NodeConnectionType } from 'n8n-workflow';
-
-import isEmpty from 'lodash/isEmpty';
-
 import {
 	handleListing,
 	qontoApiRequest
@@ -36,7 +32,19 @@ import {
   cardsOperations,
 } from './descriptions';
 
-import { randomUUID as uuid } from 'crypto';
+// Simple isEmpty implementation to avoid external dependency
+function isEmpty(value: IDataObject): boolean {
+	return value === null || value === undefined || 
+	       (typeof value === 'object' && Object.keys(value).length === 0);
+}
+
+function uuid(): string {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+		const r = Math.random() * 16 | 0;
+		const v = c === 'x' ? r : (r & 0x3 | 0x8);
+		return v.toString(16);
+	});
+}
 
 export class Qonto implements INodeType {
 	description: INodeTypeDescription = {
@@ -50,8 +58,9 @@ export class Qonto implements INodeType {
 		defaults: {
 			name: 'Qonto',
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		usableAsTool: true,
+		inputs: ['main'],
+		outputs: ['main'],
 		credentials: [
 			{
 				name: 'qontoApi',
@@ -605,18 +614,22 @@ if (resource === 'attachmentsInATransaction') {
 		const fileBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 
 		// Use multipart/form-data as required by Qonto API
-		const form = new FormData();
-		const blob = new Blob([fileBuffer], { 
-			type: binaryData.mimeType || 'application/octet-stream' 
-		});
-		form.append('file', blob, binaryData.fileName || 'attachment');
+		const formData = {
+			file: {
+				value: fileBuffer,
+				options: {
+					filename: binaryData.fileName || 'attachment',
+					contentType: binaryData.mimeType || 'application/octet-stream',
+				},
+			},
+		};
 
 		responseData = await qontoApiRequest.call(
 			this,
 			headers,
 			'POST',
 			endpoint,
-			form as any,
+			formData,
 			{},
 			true
 		);
@@ -1511,9 +1524,14 @@ if (resource === 'cards') {
 				}
 				throw error;
 			}
-			Array.isArray(responseData)
-				? returnData.push(...responseData)
-				: returnData.push(responseData);
+			
+			if (responseData) {
+				if (Array.isArray(responseData)) {
+					returnData.push(...responseData);
+				} else {
+					returnData.push(responseData);
+				}
+			}
 		}
 		return [this.helpers.returnJsonArray(returnData)];
 	}

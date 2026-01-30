@@ -41,7 +41,7 @@ export const insuranceContractsOperations: INodeProperties[] = [
 					action: 'Delete uploaded document',
 				},
 			],
-			default: 'listTransactions',
+			default: 'createInsuranceContract',
 		},
 	// ------------------------
 	//      insuranceContracts - Create a new insurance contract
