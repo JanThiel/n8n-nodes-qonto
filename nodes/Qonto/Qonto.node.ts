@@ -1025,7 +1025,7 @@ if (resource === 'clientsInvoices') {
 		const filters = this.getNodeParameter('filters', i) as IDataObject;
 		if (!isEmpty(filters)) {
 			if (filters.status && (filters.status as string[]).length > 0) {
-				query['filter[status]'] = filters.status;
+				query['filter[status]'] = (filters.status as string[]).join(',');
 			}
 			if (filters.created_at_from) {
 				query['filter[created_at_from]'] = filters.created_at_from;
