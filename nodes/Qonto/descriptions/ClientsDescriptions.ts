@@ -122,20 +122,6 @@ export const clientsOperations: INodeProperties[] = [
         },
         options: [
             {
-                displayName: 'Tax Identification Number',
-                name: 'tax_identification_number',
-                type: 'string',
-                default: '',
-                description: 'Filter clients by tax identification number (exact, case-insensitive match)',
-            },
-            {
-                displayName: 'VAT Number',
-                name: 'vat_number',
-                type: 'string',
-                default: '',
-                description: 'Filter clients by VAT number (exact, case-insensitive match)',
-            },
-            {
                 displayName: 'Email',
                 name: 'email',
                 type: 'string',
@@ -149,6 +135,45 @@ export const clientsOperations: INodeProperties[] = [
                 type: 'string',
                 default: '',
                 description: 'Filter clients by name (exact and partial matches, case-insensitive). Must be at least 2 characters.',
+            },
+            {
+                displayName: 'Sort By',
+                name: 'sort_by',
+                type: 'options',
+                options: [
+                    {
+                        name: 'Created At (Ascending)',
+                        value: 'created_at:asc',
+                    },
+                    {
+                        name: 'Created At (Descending)',
+                        value: 'created_at:desc',
+                    },
+                    {
+                        name: 'Name (Ascending)',
+                        value: 'name:asc',
+                    },
+                    {
+                        name: 'Name (Descending)',
+                        value: 'name:desc',
+                    },
+                ],
+                default: 'name:asc',
+                description: 'Sort clients by their created_at or name property',
+            },
+            {
+                displayName: 'Tax Identification Number',
+                name: 'tax_identification_number',
+                type: 'string',
+                default: '',
+                description: 'Filter clients by tax identification number (exact, case-insensitive match)',
+            },
+            {
+                displayName: 'VAT Number',
+                name: 'vat_number',
+                type: 'string',
+                default: '',
+                description: 'Filter clients by VAT number (exact, case-insensitive match)',
             },
         ],
     },

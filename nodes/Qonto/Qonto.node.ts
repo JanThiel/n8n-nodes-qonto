@@ -280,7 +280,7 @@ if (resource === 'externalTransfers') {
 			if (filters.scheduled_date_to) {
 				query.scheduled_date_to = filters.scheduled_date_to;
 			}
-			if (filters.status) {
+			if (filters.status && (filters.status as string[]).length > 0) {
 				query['status[]'] = filters.status;
 			}
 			if (filters.updated_at_from) {
@@ -291,6 +291,17 @@ if (resource === 'externalTransfers') {
 			}
 			if (filters.beneficiary_ids) {
 				query['beneficiary_ids[]'] = filters.beneficiary_ids;
+			}
+			if (filters.ids) {
+				const ids = (filters.ids as string).split(',').map(id => id.trim());
+				query['ids[]'] = ids;
+			}
+			if (filters.recurring_transfer_ids) {
+				const rIds = (filters.recurring_transfer_ids as string).split(',').map(id => id.trim());
+				query['recurring_transfer_ids[]'] = rIds;
+			}
+			if (filters.sort_by) {
+				query.sort_by = filters.sort_by;
 			}
 		}
 
@@ -329,7 +340,7 @@ if (resource === 'beneficiaries') {
 				query.trusted = filters.trusted;
 			}
 
-			if (filters.status) {
+			if (filters.status && (filters.status as string[]).length > 0) {
 				query['status[]'] = filters.status;
 			}
 
@@ -338,6 +349,9 @@ if (resource === 'beneficiaries') {
 			}
 			if (filters.updated_at_to) {
 				query.updated_at_to = filters.updated_at_to;
+			}
+			if (filters.sort_by) {
+				query.sort_by = filters.sort_by;
 			}
 		}
 
@@ -696,15 +710,15 @@ if (resource === 'transactions') {
 
 		if (identifierType === 'bankAccountId') {
 				const bankAccountId = this.getNodeParameter('bankAccountId', i) as string;
-				query.bank_account_id = bankAccountId; // Note : l'API attend bank_account_id (avec underscore)
-		} else { // 'iban' est le défaut
+				query.bank_account_id = bankAccountId;
+		} else {
 				const iban = this.getNodeParameter('iban', i) as string;
 				query.iban = iban;
 		}
 
 		const filters = this.getNodeParameter('filters', i) as IDataObject;
 		if (!isEmpty(filters)) {
-			if (filters.status) {
+			if (filters.status && (filters.status as string[]).length > 0) {
 				query['status[]'] = filters.status as string[];
 			}
 			if (filters.updated_at_from) {
@@ -712,6 +726,12 @@ if (resource === 'transactions') {
 			}
 			if (filters.updated_at_to) {
 				query.updated_at_to = filters.updated_at_to;
+			}
+			if (filters.created_at_from) {
+				query.created_at_from = filters.created_at_from;
+			}
+			if (filters.created_at_to) {
+				query.created_at_to = filters.created_at_to;
 			}
 			if (filters.emitted_at_from) {
 				query.emitted_at_from = filters.emitted_at_from;
@@ -734,11 +754,11 @@ if (resource === 'transactions') {
 			if (typeof filters.with_attachments !== 'undefined') {
 				query.with_attachments = filters.with_attachments;
 			}
-			if (filters.labels) {
-				query.labels = filters.labels;
+			if (filters.sort_by) {
+				query.sort_by = filters.sort_by;
 			}
-			if (filters.attachments) {
-				query.attachments = filters.attachments;
+			if (filters.includes && (filters.includes as string[]).length > 0) {
+				query['includes[]'] = filters.includes as string[];
 			}
 		}
 
@@ -761,13 +781,19 @@ if (resource === 'transactions') {
 		const id = this.getNodeParameter('id', i) as string;
 		const endpoint = `transactions/${id}`;
 
+		const includes = this.getNodeParameter('includes', i, []) as string[];
+		const showQuery: IDataObject = {};
+		if (includes && includes.length > 0) {
+			showQuery['includes[]'] = includes;
+		}
+
 		responseData = await qontoApiRequest.call(
 			this,
 			{},
 			'GET',
 			endpoint,
 			{},
-			{},
+			showQuery,
 		);
 	}
 }
@@ -1136,6 +1162,9 @@ if (resource === 'clients') {
 			if (filters.name) {
 				query['filter[name]'] = filters.name;
 			}
+			if (filters.sort_by) {
+				query.sort_by = filters.sort_by;
+			}
 		}
 
 		responseData = await handleListing.call(
@@ -1272,21 +1301,29 @@ if (resource === 'statements') {
 
 	// -----------------------------------------
 	// LIST STATEMENTS
-	// GET /statements?organization_id=xxx
+	// GET /statements
 	// -----------------------------------------
-	if (operation === 'listStatements') {
+	if (operation === 'listStatement') {
 		const endpoint = 'statements';
-
-		const organizationId = this.getNodeParameter('organizationId', i) as string;
-		query.organization_id = organizationId;
 
 		const filters = this.getNodeParameter('filters', i) as IDataObject;
 		if (!isEmpty(filters)) {
-			if (filters.start_date) {
-				query.start_date = filters.start_date;
+			if (filters.bank_account_ids) {
+				const ids = (filters.bank_account_ids as string).split(',').map(id => id.trim());
+				query['bank_account_ids[]'] = ids;
 			}
-			if (filters.end_date) {
-				query.end_date = filters.end_date;
+			if (filters.ibans) {
+				const ibans = (filters.ibans as string).split(',').map(iban => iban.trim());
+				query['ibans[]'] = ibans;
+			}
+			if (filters.period_from) {
+				query.period_from = filters.period_from;
+			}
+			if (filters.period_to) {
+				query.period_to = filters.period_to;
+			}
+			if (filters.sort_by) {
+				query.sort_by = filters.sort_by;
 			}
 		}
 
