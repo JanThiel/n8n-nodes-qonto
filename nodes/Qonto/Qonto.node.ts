@@ -7,6 +7,7 @@ import {
 } from 'n8n-workflow';
 
 import {
+	formatDateTime,
 	handleListing,
 	qontoApiRequest
 } from './helpers';
@@ -204,7 +205,7 @@ if (resource === 'externalTransfers') {
 			reference:      this.getNodeParameter('reference', i)      as string,
 			note:           this.getNodeParameter('note', i)           as string,
 			currency:       this.getNodeParameter('currency', i)       as string,
-			scheduled_date: this.getNodeParameter('scheduled_date', i) as string,
+			scheduled_date: formatDateTime(this.getNodeParameter('scheduled_date', i) as string),
 			amount:         this.getNodeParameter('amount', i)         as string,
 			attachment_ids: this.getNodeParameter('attachment_ids', i) as IDataObject,
 		};
@@ -245,7 +246,7 @@ if (resource === 'externalTransfers') {
 			reference:              this.getNodeParameter('reference', i)              as string,
 			note:                   this.getNodeParameter('note', i)                   as string,
 			currency:               this.getNodeParameter('currency', i)               as string,
-			scheduled_date:         this.getNodeParameter('scheduled_date', i)         as string,
+			scheduled_date:         formatDateTime(this.getNodeParameter('scheduled_date', i) as string),
 			amount:                 this.getNodeParameter('amount', i)                 as string,
 			attachment_ids:         this.getNodeParameter('attachment_ids', i)         as IDataObject,
 		};
@@ -275,19 +276,19 @@ if (resource === 'externalTransfers') {
 		const filters = this.getNodeParameter('filters', i) as IDataObject;
 		if (!isEmpty(filters)) {
 			if (filters.scheduled_date_from) {
-				query.scheduled_date_from = filters.scheduled_date_from;
+				query.scheduled_date_from = formatDateTime(filters.scheduled_date_from as string);
 			}
 			if (filters.scheduled_date_to) {
-				query.scheduled_date_to = filters.scheduled_date_to;
+				query.scheduled_date_to = formatDateTime(filters.scheduled_date_to as string);
 			}
 			if (filters.status && (filters.status as string[]).length > 0) {
 				query['status[]'] = filters.status;
 			}
 			if (filters.updated_at_from) {
-				query.updated_at_from = filters.updated_at_from;
+				query.updated_at_from = formatDateTime(filters.updated_at_from as string);
 			}
 			if (filters.updated_at_to) {
-				query.updated_at_to = filters.updated_at_to;
+				query.updated_at_to = formatDateTime(filters.updated_at_to as string);
 			}
 			if (filters.beneficiary_ids) {
 				query['beneficiary_ids[]'] = filters.beneficiary_ids;
@@ -345,10 +346,10 @@ if (resource === 'beneficiaries') {
 			}
 
 			if (filters.updated_at_from) {
-				query.updated_at_from = filters.updated_at_from;
+				query.updated_at_from = formatDateTime(filters.updated_at_from as string);
 			}
 			if (filters.updated_at_to) {
-				query.updated_at_to = filters.updated_at_to;
+				query.updated_at_to = formatDateTime(filters.updated_at_to as string);
 			}
 			if (filters.sort_by) {
 				query.sort_by = filters.sort_by;
@@ -722,28 +723,28 @@ if (resource === 'transactions') {
 				query['status[]'] = filters.status as string[];
 			}
 			if (filters.updated_at_from) {
-				query.updated_at_from = filters.updated_at_from;
+				query.updated_at_from = formatDateTime(filters.updated_at_from as string);
 			}
 			if (filters.updated_at_to) {
-				query.updated_at_to = filters.updated_at_to;
+				query.updated_at_to = formatDateTime(filters.updated_at_to as string);
 			}
 			if (filters.created_at_from) {
-				query.created_at_from = filters.created_at_from;
+				query.created_at_from = formatDateTime(filters.created_at_from as string);
 			}
 			if (filters.created_at_to) {
-				query.created_at_to = filters.created_at_to;
+				query.created_at_to = formatDateTime(filters.created_at_to as string);
 			}
 			if (filters.emitted_at_from) {
-				query.emitted_at_from = filters.emitted_at_from;
+				query.emitted_at_from = formatDateTime(filters.emitted_at_from as string);
 			}
 			if (filters.emitted_at_to) {
-				query.emitted_at_to = filters.emitted_at_to;
+				query.emitted_at_to = formatDateTime(filters.emitted_at_to as string);
 			}
 			if (filters.settled_at_from) {
-				query.settled_at_from = filters.settled_at_from;
+				query.settled_at_from = formatDateTime(filters.settled_at_from as string);
 			}
 			if (filters.settled_at_to) {
-				query.settled_at_to = filters.settled_at_to;
+				query.settled_at_to = formatDateTime(filters.settled_at_to as string);
 			}
 			if (filters.side) {
 				query.side = filters.side;
@@ -855,10 +856,10 @@ if (resource === 'requests') {
 			}
 
 			if (filters.created_at_from) {
-				query.created_at_from = filters.created_at_from;
+				query.created_at_from = formatDateTime(filters.created_at_from as string);
 			}
 			if (filters.processed_at_from) {
-				query.processed_at_from = filters.processed_at_from;
+				query.processed_at_from = formatDateTime(filters.processed_at_from as string);
 			}
 		}
 
@@ -955,10 +956,10 @@ if (resource === 'supplierInvoices') {
 				query.status = filters.status;
 			}
 			if (filters.start_date) {
-				query.start_date = filters.start_date;
+				query.start_date = formatDateTime(filters.start_date as string);
 			}
 			if (filters.end_date) {
-				query.end_date = filters.end_date;
+				query.end_date = formatDateTime(filters.end_date as string);
 			}
 		}
 
@@ -1028,25 +1029,25 @@ if (resource === 'clientsInvoices') {
 				query['filter[status]'] = (filters.status as string[]).join(',');
 			}
 			if (filters.created_at_from) {
-				query['filter[created_at_from]'] = filters.created_at_from;
+				query['filter[created_at_from]'] = formatDateTime(filters.created_at_from as string);
 			}
 			if (filters.created_at_to) {
-				query['filter[created_at_to]'] = filters.created_at_to;
+				query['filter[created_at_to]'] = formatDateTime(filters.created_at_to as string);
 			}
 			if (filters.updated_at_from) {
-				query['filter[updated_at_from]'] = filters.updated_at_from;
+				query['filter[updated_at_from]'] = formatDateTime(filters.updated_at_from as string);
 			}
 			if (filters.updated_at_to) {
-				query['filter[updated_at_to]'] = filters.updated_at_to;
+				query['filter[updated_at_to]'] = formatDateTime(filters.updated_at_to as string);
 			}
 			if (filters.due_date) {
-				query['filter[due_date]'] = filters.due_date;
+				query['filter[due_date]'] = formatDateTime(filters.due_date as string);
 			}
 			if (filters.due_date_from) {
-				query['filter[due_date_from]'] = filters.due_date_from;
+				query['filter[due_date_from]'] = formatDateTime(filters.due_date_from as string);
 			}
 			if (filters.due_date_to) {
-				query['filter[due_date_to]'] = filters.due_date_to;
+				query['filter[due_date_to]'] = formatDateTime(filters.due_date_to as string);
 			}
 			if (typeof filters.exclude_imported !== 'undefined') {
 				query.exclude_imported = filters.exclude_imported;
@@ -1120,10 +1121,10 @@ if (resource === 'creditNotes') {
 		const filters = this.getNodeParameter('filters', i) as IDataObject;
 		if (!isEmpty(filters)) {
 			if (filters.created_at_from) {
-				query.created_at_from = filters.created_at_from;
+				query.created_at_from = formatDateTime(filters.created_at_from as string);
 			}
 			if (filters.created_at_to) {
-				query.created_at_to = filters.created_at_to;
+				query.created_at_to = formatDateTime(filters.created_at_to as string);
 			}
 		}
 
@@ -1392,10 +1393,12 @@ if (resource === 'insuranceContracts') {
 
 		const organizationId = this.getNodeParameter('organizationId', i) as string;
 
+		const endDate = this.getNodeParameter('endDate', i, null) as string | null;
+
 		const contractData = {
 			name:             this.getNodeParameter('contractName', i) as string,
-			start_date:       this.getNodeParameter('startDate', i) as string,
-			end_date:         this.getNodeParameter('endDate', i, null) as string | null,
+			start_date:       formatDateTime(this.getNodeParameter('startDate', i) as string),
+			end_date:         endDate ? formatDateTime(endDate) : null,
 			coverage_details: this.getNodeParameter('coverageDetails', i, null) as string | null,
 		};
 
@@ -1445,9 +1448,11 @@ if (resource === 'insuranceContracts') {
 		const contractId = this.getNodeParameter('contractId', i) as string;
 		const endpoint = `insurance_contracts/${contractId}`;
 
+		const endDate = this.getNodeParameter('endDate', i, null) as string | null;
+
 		const updateData: IDataObject = {
 			name:             this.getNodeParameter('contractName', i, null) as string | null,
-			end_date:         this.getNodeParameter('endDate', i, null) as string | null,
+			end_date:         endDate ? formatDateTime(endDate) : null,
 			coverage_details: this.getNodeParameter('coverageDetails', i, null) as string | null,
 		};
 
