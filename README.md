@@ -1,5 +1,7 @@
 # n8n-nodes-qonto
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 > **📦 Installation Note**
 > 
 > This repository contains the code for the **`n8n-nodes-qonto-api`** node. Use this name when installing the Community Node into n8n.
@@ -26,6 +28,7 @@ Qonto is a business banking platform that provides banking services for SMEs and
 
 [Installation](#installation)  
 [Operations](#operations)  
+[Example Use Cases](#example-use-cases)  
 [Credentials](#credentials)  
 [Compatibility](#compatibility)  
 [Resources](#resources)
@@ -56,6 +59,80 @@ This node supports the following Qonto resources:
 - **Clients**: Manage clients
 - **Teams**: Manage teams
 - **Insurance Contracts**: Manage insurance contracts
+
+## Example Use Cases
+
+This section provides practical examples of how to use the Qonto node in real-world automation scenarios.
+
+### 1. Sync Orders and Customers from Shopify to Qonto Clients and Client Invoices
+
+Automatically synchronize your e-commerce operations with your business banking:
+
+**Workflow Overview:**
+1. **Trigger**: New order created in Shopify
+2. **Process Customer**: 
+   - Extract customer information from Shopify order
+   - Check if client exists in Qonto using the Clients resource
+   - Create new client in Qonto if not exists
+3. **Create Invoice**:
+   - Use the Client Invoices resource to create an invoice in Qonto
+   - Map order items, amounts, and tax information
+   - Link the invoice to the Qonto client
+4. **Result**: Your Qonto account automatically reflects your Shopify sales with proper client records and invoices
+
+**Benefits:**
+- Eliminate manual data entry between systems
+- Maintain accurate client records
+- Ensure all sales are properly documented for accounting
+- Streamline invoice management across platforms
+
+### 2. Create Invoices in Qonto whenever a Task with Time Tracking in Asana Gets Completed
+
+Transform completed project work into invoices automatically:
+
+**Workflow Overview:**
+1. **Trigger**: Task marked as completed in Asana
+2. **Extract Time Data**:
+   - Retrieve time tracking information from the completed task
+   - Calculate billable hours and rates
+   - Gather project and client details from task metadata
+3. **Create Client Invoice**:
+   - Use the Client Invoices resource to create an invoice
+   - Include task description, hours worked, and calculated amount
+   - Attach relevant project information
+4. **Optional**: Send notification to client or accounting team
+
+**Benefits:**
+- Automate billing for time-tracked projects
+- Reduce time between work completion and invoicing
+- Ensure accurate billing based on actual time spent
+- Improve cash flow with faster invoice generation
+
+### 3. Use Qonto to Track the Payment Status of Invoices with Auto Reconciliation
+
+Monitor and reconcile invoice payments automatically:
+
+**Workflow Overview:**
+1. **Schedule**: Run periodically (e.g., daily)
+2. **Fetch Unpaid Invoices**:
+   - Use Client Invoices resource to list pending invoices
+3. **Check Transactions**:
+   - Use Transactions resource to retrieve recent incoming transactions
+   - Match transaction amounts and references with outstanding invoices
+4. **Reconcile Payments**:
+   - When a match is found, update invoice status
+   - Optionally add transaction attachment to invoice using Attachments resource
+   - Update your CRM or accounting system with payment confirmation
+5. **Notifications**:
+   - Send alerts for paid invoices
+   - Flag overdue invoices for follow-up
+
+**Benefits:**
+- Eliminate manual payment matching
+- Real-time visibility into payment status
+- Reduce accounts receivable follow-up time
+- Maintain accurate financial records automatically
+- Improve cash flow management with instant payment notifications
 
 ## Credentials
 
