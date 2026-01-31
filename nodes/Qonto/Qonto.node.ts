@@ -1024,14 +1024,35 @@ if (resource === 'clientsInvoices') {
 
 		const filters = this.getNodeParameter('filters', i) as IDataObject;
 		if (!isEmpty(filters)) {
-			if (filters.status && filters.status !== 'all') {
+			if (filters.status && (filters.status as string[]).length > 0) {
 				query['filter[status]'] = filters.status;
 			}
-			if (filters.start_date) {
-				query['filter[start_date]'] = filters.start_date;
+			if (filters.created_at_from) {
+				query['filter[created_at_from]'] = filters.created_at_from;
 			}
-			if (filters.end_date) {
-				query['filter[end_date]'] = filters.end_date;
+			if (filters.created_at_to) {
+				query['filter[created_at_to]'] = filters.created_at_to;
+			}
+			if (filters.updated_at_from) {
+				query['filter[updated_at_from]'] = filters.updated_at_from;
+			}
+			if (filters.updated_at_to) {
+				query['filter[updated_at_to]'] = filters.updated_at_to;
+			}
+			if (filters.due_date) {
+				query['filter[due_date]'] = filters.due_date;
+			}
+			if (filters.due_date_from) {
+				query['filter[due_date_from]'] = filters.due_date_from;
+			}
+			if (filters.due_date_to) {
+				query['filter[due_date_to]'] = filters.due_date_to;
+			}
+			if (typeof filters.exclude_imported !== 'undefined') {
+				query.exclude_imported = filters.exclude_imported;
+			}
+			if (filters.sort_by) {
+				query.sort_by = filters.sort_by;
 			}
 		}
 
@@ -1494,11 +1515,11 @@ if (resource === 'cards') {
 
 		const filters = this.getNodeParameter('filters', i) as IDataObject;
 		if (!isEmpty(filters)) {
-			if (filters.organizationId) {
-				query.organization_id = filters.organizationId;
+			if (filters.holder_id) {
+				query.holder_id = filters.holder_id;
 			}
-			if (filters.status && filters.status !== 'all') {
-				query.status = filters.status;
+			if (filters.status && (filters.status as string[]).length > 0) {
+				query['status[]'] = filters.status;
 			}
 		}
 
