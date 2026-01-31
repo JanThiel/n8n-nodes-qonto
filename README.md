@@ -18,7 +18,7 @@
 > 
 > This node was primarily developed using AI agents and subsequently manually reviewed and improved to ensure quality and reliability.
 > 
-> If you encounter any issues or have suggestions, please [open an issue](https://github.com/JanThiel/n8n-nodes-qonto/issues) and we'll get it fixed!
+> If you encounter any issues or have suggestions, please [open an issue](https://github.com/JanThiel/n8n-nodes-qonto-api/issues) and we'll get it fixed!
 
 This is an n8n community node. It lets you use Qonto banking API in your n8n workflows.
 
