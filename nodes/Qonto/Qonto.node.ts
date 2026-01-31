@@ -322,7 +322,7 @@ if (resource === 'beneficiaries') {
 		if (!isEmpty(filters)) {
 
 			if (filters.iban) {
-				query.iban = filters.iban as string;
+				query['iban[]'] = filters.iban as string;
 			}
 
 			if (typeof filters.trusted !== 'undefined') {
@@ -821,11 +821,11 @@ if (resource === 'requests') {
 		if (!isEmpty(filters)) {
 
 			if (filters.status) {
-				query['status[]'] = filters.status;
+				query.status = filters.status;
 			}
 
 			if (filters.request_type) {
-				query['request_type[]'] = filters.request_type;
+				query.request_type = filters.request_type;
 			}
 
 			if (filters.created_at_from) {
