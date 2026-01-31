@@ -77,6 +77,9 @@ export class QontoApi implements ICredentialType {
 			baseURL: '={{$credentials.environment === "sandbox" ? "https://thirdparty-sandbox.staging.qonto.co/v2" : "https://thirdparty.qonto.com/v2"}}',
 			url: '/organization',
 			method: 'GET',
+			headers: {
+				'X-Qonto-Staging-Token': '={{$credentials.environment === "sandbox" ? $credentials.stagingToken : undefined}}',
+			}
 		},
 	};
 }
