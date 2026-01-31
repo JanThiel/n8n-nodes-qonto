@@ -11,7 +11,7 @@ import {
 
 /**
  * Format a DateTime value to ISO 8601 format required by Qonto API.
- * The Qonto API requires DateTime values in the format: "2025-12-20T10:00:00Z"
+ * The Qonto API requires DateTime values in the format: "2025-12-20T10:00:00.000Z"
  *
  * @param {string} dateTimeValue - The input DateTime value from the n8n UI
  * @returns {string} - The formatted DateTime string in ISO 8601 format with UTC timezone

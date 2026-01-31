@@ -1393,12 +1393,11 @@ if (resource === 'insuranceContracts') {
 
 		const organizationId = this.getNodeParameter('organizationId', i) as string;
 
-		const startDate = this.getNodeParameter('startDate', i) as string;
 		const endDate = this.getNodeParameter('endDate', i, null) as string | null;
 
 		const contractData = {
 			name:             this.getNodeParameter('contractName', i) as string,
-			start_date:       formatDateTime(startDate),
+			start_date:       formatDateTime(this.getNodeParameter('startDate', i) as string),
 			end_date:         endDate ? formatDateTime(endDate) : null,
 			coverage_details: this.getNodeParameter('coverageDetails', i, null) as string | null,
 		};
