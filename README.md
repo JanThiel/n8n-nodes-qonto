@@ -108,32 +108,6 @@ Transform completed project work into invoices automatically:
 - Ensure accurate billing based on actual time spent
 - Improve cash flow with faster invoice generation
 
-### 3. Use Qonto to Track the Payment Status of Invoices with Auto Reconciliation
-
-Monitor and reconcile invoice payments automatically:
-
-**Workflow Overview:**
-1. **Schedule**: Run periodically (e.g., daily)
-2. **Fetch Unpaid Invoices**:
-   - Use Client Invoices resource to list pending invoices
-3. **Check Transactions**:
-   - Use Transactions resource to retrieve recent incoming transactions
-   - Match transaction amounts and references with outstanding invoices
-4. **Reconcile Payments**:
-   - When a match is found, update invoice status
-   - Optionally add transaction attachment to invoice using Attachments resource
-   - Update your CRM or accounting system with payment confirmation
-5. **Notifications**:
-   - Send alerts for paid invoices
-   - Flag overdue invoices for follow-up
-
-**Benefits:**
-- Eliminate manual payment matching
-- Real-time visibility into payment status
-- Reduce accounts receivable follow-up time
-- Maintain accurate financial records automatically
-- Improve cash flow management with instant payment notifications
-
 ## Credentials
 
 This node supports two authentication methods:
