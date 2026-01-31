@@ -999,13 +999,13 @@ if (resource === 'clientsInvoices') {
 		const filters = this.getNodeParameter('filters', i) as IDataObject;
 		if (!isEmpty(filters)) {
 			if (filters.status && filters.status !== 'all') {
-				query.status = filters.status;
+				query['filter[status]'] = filters.status;
 			}
 			if (filters.start_date) {
-				query.start_date = filters.start_date;
+				query['filter[start_date]'] = filters.start_date;
 			}
 			if (filters.end_date) {
-				query.end_date = filters.end_date;
+				query['filter[end_date]'] = filters.end_date;
 			}
 		}
 
