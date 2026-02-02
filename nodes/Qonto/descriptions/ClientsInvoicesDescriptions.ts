@@ -23,9 +23,9 @@ export const clientsInvoicesOperations: INodeProperties[] = [
 	},
 	options: [
 		{
-			name: 'List Client Invoices',
-			value: 'listInvoices',
-			action: 'List client invoices',
+			name: 'Cancel a Client Invoice',
+			value: 'cancelClientInvoice',
+			action: 'Cancel a client invoice',
 		},
 		{
 			name: 'Create a Client Invoice',
@@ -33,14 +33,44 @@ export const clientsInvoicesOperations: INodeProperties[] = [
 			action: 'Create a client invoice',
 		},
 		{
-			name: 'Update a Draft Client Invoice',
-			value: 'updateClientInvoice',
-			action: 'Update a draft client invoice',
+			name: 'Delete a Client Invoice',
+			value: 'deleteClientInvoice',
+			action: 'Delete a client invoice',
+		},
+		{
+			name: 'Finalize a Client Invoice',
+			value: 'finalizeClientInvoice',
+			action: 'Finalize a client invoice',
+		},
+		{
+			name: 'List Client Invoices',
+			value: 'listInvoices',
+			action: 'List client invoices',
+		},
+		{
+			name: 'Mark a Client Invoice as Paid',
+			value: 'markAsPaidClientInvoice',
+			action: 'Mark a client invoice as paid',
+		},
+		{
+			name: 'Send a Client Invoice via Email',
+			value: 'sendClientInvoice',
+			action: 'Send a client invoice via email',
 		},
 		{
 			name: 'Show Client Invoice',
 			value: 'showClientInvoice',
 			action: 'Show client invoice',
+		},
+		{
+			name: 'Unmark a Client Invoice as Paid',
+			value: 'unmarkAsPaidClientInvoice',
+			action: 'Unmark a client invoice as paid',
+		},
+		{
+			name: 'Update a Draft Client Invoice',
+			value: 'updateClientInvoice',
+			action: 'Update a draft client invoice',
 		},
 	],
 	default: 'listInvoices',
@@ -498,6 +528,103 @@ export const clientsInvoicesOperations: INodeProperties[] = [
 				description: 'Header text for the invoice',
 			},
 			{
+				displayName: 'Invoice Items',
+				name: 'items',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				default: {},
+				description: 'Items to include in the invoice',
+				options: [
+					{
+						displayName: 'Item',
+						name: 'item',
+						values: [
+							{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: '',
+						description: 'Description of the item',
+							},
+							{
+						displayName: 'Discount Type',
+						name: 'discountType',
+						type: 'options',
+						options: [
+									{
+										name: 'Percentage',
+										value: 'percentage',
+									},
+									{
+										name: 'Absolute',
+										value: 'absolute',
+									},
+								],
+						default: 'percentage',
+						description: 'Type of discount',
+							},
+							{
+						displayName: 'Discount Value',
+						name: 'discountValue',
+						type: 'string',
+						default: '',
+							},
+							{
+						displayName: 'Quantity',
+						name: 'quantity',
+						type: 'string',
+						default: '1',
+						description: 'Quantity of the item',
+							},
+							{
+						displayName: 'Title',
+						name: 'title',
+						type: 'string',
+						default: '',
+						description: 'Title of the invoice item',
+							},
+							{
+						displayName: 'Unit',
+						name: 'unit',
+						type: 'string',
+						default: '',
+						description: 'Unit of measurement (e.g., \'hour\', \'piece\')',
+							},
+							{
+						displayName: 'Unit Price Currency',
+						name: 'unitPriceCurrency',
+						type: 'string',
+						default: 'EUR',
+						description: 'Currency of the unit price',
+							},
+							{
+						displayName: 'Unit Price Value',
+						name: 'unitPriceValue',
+						type: 'string',
+						default: '',
+						description: 'Unit price value (as string, e.g., \'100.00\')',
+							},
+							{
+						displayName: 'VAT Exemption Reason',
+						name: 'vatExemptionReason',
+						type: 'string',
+						default: '',
+						description: 'VAT exemption reason code',
+							},
+							{
+						displayName: 'VAT Rate',
+						name: 'vatRate',
+						type: 'string',
+						default: '0',
+						description: 'VAT rate (e.g., \'20\' for 20%)',
+							},
+					],
+					},
+				],
+			},
+			{
 				displayName: 'Invoice Number',
 				name: 'number',
 				type: 'string',
@@ -519,6 +646,67 @@ export const clientsInvoicesOperations: INodeProperties[] = [
 				description: 'The IBAN for payment',
 			},
 			{
+				displayName: 'Payment Reporting',
+				name: 'paymentReporting',
+				type: 'collection',
+				placeholder: 'Add Payment Reporting',
+				default: {},
+				description: 'Payment reporting details for e-invoicing',
+				options: [
+					{
+						displayName: 'Conditions',
+						name: 'conditions',
+						type: 'options',
+						options: [
+							{ name: 'TP01', value: 'TP01' },
+							{ name: 'TP02', value: 'TP02' },
+							{ name: 'TP03', value: 'TP03' },
+						],
+						default: 'TP01',
+						description: 'Payment conditions code',
+					},
+					{
+						displayName: 'Method',
+						name: 'method',
+						type: 'options',
+						options: [
+							{ name: 'MP01', value: 'MP01' },
+							{ name: 'MP02', value: 'MP02' },
+							{ name: 'MP03', value: 'MP03' },
+							{ name: 'MP04', value: 'MP04' },
+							{ name: 'MP05', value: 'MP05' },
+							{ name: 'MP06', value: 'MP06' },
+							{ name: 'MP07', value: 'MP07' },
+							{ name: 'MP08', value: 'MP08' },
+							{ name: 'MP09', value: 'MP09' },
+							{ name: 'MP10', value: 'MP10' },
+							{ name: 'MP11', value: 'MP11' },
+							{ name: 'MP12', value: 'MP12' },
+							{ name: 'MP13', value: 'MP13' },
+							{ name: 'MP14', value: 'MP14' },
+							{ name: 'MP15', value: 'MP15' },
+							{ name: 'MP16', value: 'MP16' },
+							{ name: 'MP17', value: 'MP17' },
+							{ name: 'MP18', value: 'MP18' },
+							{ name: 'MP19', value: 'MP19' },
+							{ name: 'MP20', value: 'MP20' },
+							{ name: 'MP21', value: 'MP21' },
+							{ name: 'MP22', value: 'MP22' },
+							{ name: 'MP23', value: 'MP23' },
+						],
+						default: 'MP01',
+						description: 'Payment method code',
+					},
+				],
+			},
+			{
+				displayName: 'Performance Date',
+				name: 'performanceDate',
+				type: 'dateTime',
+				default: '',
+				description: 'The performance date (YYYY-MM-DD)',
+			},
+			{
 				displayName: 'Purchase Order',
 				name: 'purchaseOrder',
 				type: 'string',
@@ -526,11 +714,243 @@ export const clientsInvoicesOperations: INodeProperties[] = [
 				description: 'Purchase order reference',
 			},
 			{
+				displayName: 'Report E-Invoicing',
+				name: 'reportEinvoicing',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to report this invoice for e-invoicing',
+			},
+			{
+				displayName: 'Settings',
+				name: 'settings',
+				type: 'collection',
+				placeholder: 'Add Setting',
+				default: {},
+				description: 'Invoice settings and company information',
+				options: [
+					{
+						displayName: 'Commercial Register Number',
+						name: 'commercialRegisterNumber',
+						type: 'string',
+						default: '',
+					},
+					{
+						displayName: 'Company Leadership',
+						name: 'companyLeadership',
+						type: 'string',
+						default: '',
+						description: 'Company leadership information',
+					},
+					{
+						displayName: 'Discount Conditions',
+						name: 'discountConditions',
+						type: 'string',
+						default: '',
+						description: 'Discount conditions text',
+					},
+					{
+						displayName: 'District Court',
+						name: 'districtCourt',
+						type: 'string',
+						default: '',
+						description: 'District court information',
+					},
+					{
+						displayName: 'Late Payment Penalties',
+						name: 'latePaymentPenalties',
+						type: 'string',
+						default: '',
+						description: 'Late payment penalties text',
+					},
+					{
+						displayName: 'Legal Capital Share',
+						name: 'legalCapitalShare',
+						type: 'fixedCollection',
+						default: {},
+						description: 'Legal capital share details',
+						options: [
+							{
+								displayName: 'Capital Share',
+								name: 'capitalShare',
+								values: [
+									{
+										displayName: 'Value',
+										name: 'value',
+										type: 'string',
+										default: '',
+										description: 'Capital share value',
+									},
+									{
+										displayName: 'Currency',
+										name: 'currency',
+										type: 'string',
+										default: 'EUR',
+										description: 'Currency code (e.g., EUR)',
+									},
+								],
+							},
+						],
+					},
+					{
+						displayName: 'Legal Fixed Compensation',
+						name: 'legalFixedCompensation',
+						type: 'string',
+						default: '',
+						description: 'Legal fixed compensation text',
+					},
+					{
+						displayName: 'Tax Number',
+						name: 'taxNumber',
+						type: 'string',
+						default: '',
+						description: 'Tax identification number',
+					},
+					{
+						displayName: 'Transaction Type',
+						name: 'transactionType',
+						type: 'options',
+						options: [
+							{ name: 'Goods', value: 'goods' },
+							{ name: 'Services', value: 'services' },
+							{ name: 'Goods and Services', value: 'goods_and_services' },
+						],
+						default: 'goods',
+						description: 'Type of transaction',
+					},
+					{
+						displayName: 'VAT Number',
+						name: 'vatNumber',
+						type: 'string',
+						default: '',
+					},
+					{
+						displayName: 'VAT Payment Condition',
+						name: 'vatPaymentCondition',
+						type: 'options',
+						options: [
+							{ name: 'Compensated for Sales', value: 'compensated_for_sales' },
+							{ name: 'On Receipts', value: 'on_receipts' },
+							{ name: 'Exempt', value: 'exempt' },
+						],
+						default: 'compensated_for_sales',
+					},
+				],
+			},
+			{
+				displayName: 'Stamp Duty Amount',
+				name: 'stampDutyAmount',
+				type: 'string',
+				default: '',
+			},
+			{
 				displayName: 'Terms and Conditions',
 				name: 'termsAndConditions',
 				type: 'string',
 				default: '',
 				description: 'Terms and conditions text',
+			},
+			{
+				displayName: 'Welfare Fund',
+				name: 'welfareFund',
+				type: 'collection',
+				placeholder: 'Add Welfare Fund',
+				default: {},
+				description: 'Welfare fund details for e-invoicing',
+				options: [
+					{
+						displayName: 'Type',
+						name: 'type',
+						type: 'options',
+						options: [
+							{ name: 'TC01', value: 'TC01' },
+							{ name: 'TC02', value: 'TC02' },
+							{ name: 'TC03', value: 'TC03' },
+							{ name: 'TC04', value: 'TC04' },
+							{ name: 'TC05', value: 'TC05' },
+							{ name: 'TC06', value: 'TC06' },
+							{ name: 'TC07', value: 'TC07' },
+							{ name: 'TC08', value: 'TC08' },
+							{ name: 'TC09', value: 'TC09' },
+							{ name: 'TC10', value: 'TC10' },
+							{ name: 'TC11', value: 'TC11' },
+							{ name: 'TC12', value: 'TC12' },
+							{ name: 'TC13', value: 'TC13' },
+							{ name: 'TC14', value: 'TC14' },
+							{ name: 'TC15', value: 'TC15' },
+							{ name: 'TC16', value: 'TC16' },
+							{ name: 'TC17', value: 'TC17' },
+							{ name: 'TC18', value: 'TC18' },
+							{ name: 'TC19', value: 'TC19' },
+							{ name: 'TC20', value: 'TC20' },
+							{ name: 'TC21', value: 'TC21' },
+							{ name: 'TC22', value: 'TC22' },
+							{ name: 'TC23', value: 'TC23' },
+							{ name: 'TC24', value: 'TC24' },
+							{ name: 'TC25', value: 'TC25' },
+						],
+						default: 'TC01',
+						description: 'Welfare fund type code',
+					},
+					{
+						displayName: 'Rate',
+						name: 'rate',
+						type: 'string',
+						default: '',
+						description: 'Welfare fund rate',
+					},
+				],
+			},
+			{
+				displayName: 'Withholding Tax',
+				name: 'withholdingTax',
+				type: 'collection',
+				placeholder: 'Add Withholding Tax',
+				default: {},
+				description: 'Withholding tax details for e-invoicing',
+				options: [
+					{
+						displayName: 'Payment Reason',
+						name: 'paymentReason',
+						type: 'string',
+						default: '',
+						description: 'Payment reason code',
+					},
+					{
+						displayName: 'Rate',
+						name: 'rate',
+						type: 'string',
+						default: '',
+						description: 'Withholding tax rate',
+					},
+					{
+						displayName: 'Reason',
+						name: 'reason',
+						type: 'options',
+						options: [
+							{ name: 'RF01', value: 'RF01' },
+							{ name: 'RF02', value: 'RF02' },
+							{ name: 'RF03', value: 'RF03' },
+							{ name: 'RF04', value: 'RF04' },
+							{ name: 'RF05', value: 'RF05' },
+							{ name: 'RF06', value: 'RF06' },
+							{ name: 'RF07', value: 'RF07' },
+							{ name: 'RF08', value: 'RF08' },
+							{ name: 'RF09', value: 'RF09' },
+							{ name: 'RF10', value: 'RF10' },
+							{ name: 'RF11', value: 'RF11' },
+							{ name: 'RF12', value: 'RF12' },
+							{ name: 'RF13', value: 'RF13' },
+							{ name: 'RF14', value: 'RF14' },
+							{ name: 'RF15', value: 'RF15' },
+							{ name: 'RF16', value: 'RF16' },
+							{ name: 'RF17', value: 'RF17' },
+							{ name: 'RF18', value: 'RF18' },
+							{ name: 'RF19', value: 'RF19' },
+						],
+						default: 'RF01',
+						description: 'Withholding tax reason code',
+					},
+				],
 			},
 		],
 	},
@@ -556,6 +976,220 @@ export const clientsInvoicesOperations: INodeProperties[] = [
 		default: '',
 		required: true,
 		description: 'The unique identifier of the invoice to show',
+	},
+
+// ------------------------
+//      Client Invoice - Delete a client invoice
+// ------------------------
+
+	{
+		displayName: 'Invoice ID',
+		name: 'invoiceId',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'clientsInvoices',
+				],
+				operation: [
+					'deleteClientInvoice',
+				],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'The unique identifier of the invoice to delete',
+	},
+
+// ------------------------
+//      Client Invoice - Finalize a client invoice
+// ------------------------
+
+	{
+		displayName: 'Invoice ID',
+		name: 'invoiceId',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'clientsInvoices',
+				],
+				operation: [
+					'finalizeClientInvoice',
+				],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'The unique identifier of the invoice to finalize',
+	},
+
+// ------------------------
+//      Client Invoice - Cancel a client invoice
+// ------------------------
+
+	{
+		displayName: 'Invoice ID',
+		name: 'invoiceId',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'clientsInvoices',
+				],
+				operation: [
+					'cancelClientInvoice',
+				],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'The unique identifier of the invoice to cancel',
+	},
+
+// ------------------------
+//      Client Invoice - Mark a client invoice as paid
+// ------------------------
+
+	{
+		displayName: 'Invoice ID',
+		name: 'invoiceId',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'clientsInvoices',
+				],
+				operation: [
+					'markAsPaidClientInvoice',
+				],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'The unique identifier of the invoice to mark as paid',
+	},
+	{
+		displayName: 'Paid At',
+		name: 'paidAt',
+		type: 'dateTime',
+		displayOptions: {
+			show: {
+				resource: [
+					'clientsInvoices',
+				],
+				operation: [
+					'markAsPaidClientInvoice',
+				],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'The date the invoice was paid (YYYY-MM-DD)',
+	},
+
+// ------------------------
+//      Client Invoice - Unmark a client invoice as paid
+// ------------------------
+
+	{
+		displayName: 'Invoice ID',
+		name: 'invoiceId',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'clientsInvoices',
+				],
+				operation: [
+					'unmarkAsPaidClientInvoice',
+				],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'The unique identifier of the invoice to unmark as paid',
+	},
+
+// ------------------------
+//      Client Invoice - Send a client invoice via email
+// ------------------------
+
+	{
+		displayName: 'Invoice ID',
+		name: 'invoiceId',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'clientsInvoices',
+				],
+				operation: [
+					'sendClientInvoice',
+				],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'The unique identifier of the invoice to send',
+	},
+	{
+		displayName: 'Send To',
+		name: 'sendTo',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'clientsInvoices',
+				],
+				operation: [
+					'sendClientInvoice',
+				],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'Email addresses to send to (comma-separated)',
+	},
+	{
+		displayName: 'Additional Options',
+		name: 'additionalOptions',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: [
+					'clientsInvoices',
+				],
+				operation: [
+					'sendClientInvoice',
+				],
+			},
+		},
+		options: [
+			{
+				displayName: 'Email Title',
+				name: 'emailTitle',
+				type: 'string',
+				default: '',
+				description: 'Title of the email',
+			},
+			{
+				displayName: 'Email Body',
+				name: 'emailBody',
+				type: 'string',
+				default: '',
+				description: 'Body text of the email',
+			},
+			{
+				displayName: 'Copy to Self',
+				name: 'copyToSelf',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to send a copy to yourself',
+			},
+		],
 	},
 
 ];
