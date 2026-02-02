@@ -1341,6 +1341,117 @@ if (resource === 'clientsInvoices') {
 			body.report_einvoicing = updateFields.reportEinvoicing;
 		}
 
+		if (updateFields.stampDutyAmount) {
+			body.stamp_duty_amount = updateFields.stampDutyAmount;
+		}
+
+		// Handle settings if provided
+		if (updateFields.settings) {
+			const settingsData = updateFields.settings as IDataObject;
+			const settings: IDataObject = {};
+
+			if (settingsData.vatNumber) {
+				settings.vat_number = settingsData.vatNumber;
+			}
+			if (settingsData.companyLeadership) {
+				settings.company_leadership = settingsData.companyLeadership;
+			}
+			if (settingsData.districtCourt) {
+				settings.district_court = settingsData.districtCourt;
+			}
+			if (settingsData.commercialRegisterNumber) {
+				settings.commercial_register_number = settingsData.commercialRegisterNumber;
+			}
+			if (settingsData.taxNumber) {
+				settings.tax_number = settingsData.taxNumber;
+			}
+			if (settingsData.legalCapitalShare) {
+				const lcsData = settingsData.legalCapitalShare as IDataObject;
+				if (lcsData.capitalShare && Array.isArray(lcsData.capitalShare)) {
+					const cs = (lcsData.capitalShare as IDataObject[])[0];
+					if (cs) {
+						settings.legal_capital_share = {
+							value: cs.value,
+							currency: cs.currency || 'EUR',
+						};
+					}
+				}
+			}
+			if (settingsData.transactionType) {
+				settings.transaction_type = settingsData.transactionType;
+			}
+			if (settingsData.vatPaymentCondition) {
+				settings.vat_payment_condition = settingsData.vatPaymentCondition;
+			}
+			if (settingsData.discountConditions) {
+				settings.discount_conditions = settingsData.discountConditions;
+			}
+			if (settingsData.latePaymentPenalties) {
+				settings.late_payment_penalties = settingsData.latePaymentPenalties;
+			}
+			if (settingsData.legalFixedCompensation) {
+				settings.legal_fixed_compensation = settingsData.legalFixedCompensation;
+			}
+
+			if (Object.keys(settings).length > 0) {
+				body.settings = settings;
+			}
+		}
+
+		// Handle payment_reporting if provided
+		if (updateFields.paymentReporting) {
+			const prData = updateFields.paymentReporting as IDataObject;
+			const paymentReporting: IDataObject = {};
+
+			if (prData.conditions) {
+				paymentReporting.conditions = prData.conditions;
+			}
+			if (prData.method) {
+				paymentReporting.method = prData.method;
+			}
+
+			if (Object.keys(paymentReporting).length > 0) {
+				body.payment_reporting = paymentReporting;
+			}
+		}
+
+		// Handle welfare_fund if provided
+		if (updateFields.welfareFund) {
+			const wfData = updateFields.welfareFund as IDataObject;
+			const welfareFund: IDataObject = {};
+
+			if (wfData.type) {
+				welfareFund.type = wfData.type;
+			}
+			if (wfData.rate) {
+				welfareFund.rate = wfData.rate;
+			}
+
+			if (Object.keys(welfareFund).length > 0) {
+				body.welfare_fund = welfareFund;
+			}
+		}
+
+		// Handle withholding_tax if provided
+		if (updateFields.withholdingTax) {
+			const wtData = updateFields.withholdingTax as IDataObject;
+			const withholdingTax: IDataObject = {};
+
+			if (wtData.reason) {
+				withholdingTax.reason = wtData.reason;
+			}
+			if (wtData.rate) {
+				withholdingTax.rate = wtData.rate;
+			}
+			if (wtData.paymentReason) {
+				withholdingTax.payment_reason = wtData.paymentReason;
+			}
+
+			if (Object.keys(withholdingTax).length > 0) {
+				body.withholding_tax = withholdingTax;
+			}
+		}
+
 		headers = {
 			...headers,
 			'Content-Type': 'application/json',
