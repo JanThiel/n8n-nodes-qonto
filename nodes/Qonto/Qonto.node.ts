@@ -1274,6 +1274,9 @@ if (resource === 'clientsInvoices') {
 		if (updateFields.issueDate) {
 			body.issue_date = formatDate(updateFields.issueDate as string);
 		}
+		if (updateFields.performanceDate) {
+			body.performance_date = formatDate(updateFields.performanceDate as string);
+		}
 		if (updateFields.dueDate) {
 			body.due_date = formatDate(updateFields.dueDate as string);
 		}
@@ -1294,6 +1297,48 @@ if (resource === 'clientsInvoices') {
 		}
 		if (updateFields.paymentIban) {
 			body.payment_methods = { iban: updateFields.paymentIban };
+		}
+
+		// Handle items if provided
+		if (updateFields.items) {
+			const itemsData = updateFields.items as IDataObject;
+			const items: IDataObject[] = [];
+			if (itemsData.item && Array.isArray(itemsData.item)) {
+				for (const item of itemsData.item as IDataObject[]) {
+					const invoiceItem: IDataObject = {
+						title: item.title,
+						quantity: item.quantity,
+						unit_price: {
+							value: item.unitPriceValue,
+							currency: item.unitPriceCurrency,
+						},
+						vat_rate: item.vatRate,
+					};
+					if (item.description) {
+						invoiceItem.description = item.description;
+					}
+					if (item.unit) {
+						invoiceItem.unit = item.unit;
+					}
+					if (item.vatExemptionReason) {
+						invoiceItem.vat_exemption_reason = item.vatExemptionReason;
+					}
+					if (item.discountType && item.discountValue) {
+						invoiceItem.discount = {
+							type: item.discountType,
+							value: item.discountValue,
+						};
+					}
+					items.push(invoiceItem);
+				}
+			}
+			if (items.length > 0) {
+				body.items = items;
+			}
+		}
+
+		if (typeof updateFields.reportEinvoicing !== 'undefined') {
+			body.report_einvoicing = updateFields.reportEinvoicing;
 		}
 
 		headers = {
@@ -1325,6 +1370,163 @@ if (resource === 'clientsInvoices') {
 			'GET',
 			endpoint,
 			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// DELETE A CLIENT INVOICE
+	// DELETE /client_invoices/:id
+	// -----------------------------------------
+	if (operation === 'deleteClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'DELETE',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// FINALIZE A CLIENT INVOICE
+	// POST /client_invoices/:id/finalize
+	// -----------------------------------------
+	if (operation === 'finalizeClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}/finalize`;
+
+		headers = {
+			...headers,
+			'Content-Type': 'application/json',
+		};
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// CANCEL A CLIENT INVOICE
+	// POST /client_invoices/:id/mark_as_canceled
+	// -----------------------------------------
+	if (operation === 'cancelClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}/mark_as_canceled`;
+
+		headers = {
+			...headers,
+			'Content-Type': 'application/json',
+		};
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// MARK A CLIENT INVOICE AS PAID
+	// POST /client_invoices/:id/mark_as_paid
+	// -----------------------------------------
+	if (operation === 'markAsPaidClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const paidAt = formatDate(this.getNodeParameter('paidAt', i) as string);
+		const endpoint = `client_invoices/${invoiceId}/mark_as_paid`;
+
+		const body: IDataObject = {
+			paid_at: paidAt,
+		};
+
+		headers = {
+			...headers,
+			'Content-Type': 'application/json',
+		};
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			body,
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// UNMARK A CLIENT INVOICE AS PAID
+	// POST /client_invoices/:id/unmark_as_paid
+	// -----------------------------------------
+	if (operation === 'unmarkAsPaidClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}/unmark_as_paid`;
+
+		headers = {
+			...headers,
+			'Content-Type': 'application/json',
+		};
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// SEND A CLIENT INVOICE VIA EMAIL
+	// POST /client_invoices/:id/send
+	// -----------------------------------------
+	if (operation === 'sendClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const sendTo = this.getNodeParameter('sendTo', i) as string;
+		const endpoint = `client_invoices/${invoiceId}/send`;
+
+		// Parse comma-separated email addresses
+		const emailArray = sendTo.split(',').map(email => email.trim());
+
+		const body: IDataObject = {
+			send_to: emailArray,
+		};
+
+		const additionalOptions = this.getNodeParameter('additionalOptions', i, {}) as IDataObject;
+		if (additionalOptions.emailTitle) {
+			body.email_title = additionalOptions.emailTitle;
+		}
+		if (additionalOptions.emailBody) {
+			body.email_body = additionalOptions.emailBody;
+		}
+		if (typeof additionalOptions.copyToSelf !== 'undefined') {
+			body.copy_to_self = additionalOptions.copyToSelf;
+		}
+
+		headers = {
+			...headers,
+			'Content-Type': 'application/json',
+		};
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			body,
 			{},
 		);
 	}
