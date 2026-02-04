@@ -32,6 +32,11 @@ export const supplierInvoicesOperations: INodeProperties[] = [
 			value: 'createSupplierInvoices',
 			action: 'Create supplier invoices with attachments',
 		},
+		{
+			name: 'Retrieve Supplier Invoice',
+			value: 'showSupplierInvoice',
+			action: 'Retrieve a supplier invoice',
+		},
 	],
 	default: 'getSupplierInvoices',
 },
@@ -130,6 +135,24 @@ export const supplierInvoicesOperations: INodeProperties[] = [
 //      SUPPLIER INVOICES - Create supplier invoices with attachments
 // ------------------------
 
+    {
+        displayName: 'Supplier Invoice ID',
+        name: 'supplierInvoiceId',
+        type: 'string',
+				displayOptions: {
+					show: {
+						resource: [
+							'supplierInvoices',
+						],
+						operation: [
+							'showSupplierInvoice',
+						],
+					},
+				},
+        default: '',
+        required: true,
+        description: 'The unique identifier of the supplier invoice to retrieve',
+    },
     {
         displayName: 'Organization ID',
         name: 'organizationId',

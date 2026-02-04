@@ -42,6 +42,36 @@ export const clientsInvoicesOperations: INodeProperties[] = [
 			value: 'showClientInvoice',
 			action: 'Show client invoice',
 		},
+		{
+			name: 'Delete Client Invoice',
+			value: 'deleteClientInvoice',
+			action: 'Delete a client invoice',
+		},
+		{
+			name: 'Finalize Client Invoice',
+			value: 'finalizeClientInvoice',
+			action: 'Finalize a client invoice',
+		},
+		{
+			name: 'Cancel Client Invoice',
+			value: 'cancelClientInvoice',
+			action: 'Cancel a client invoice',
+		},
+		{
+			name: 'Unmark Client Invoice as Paid',
+			value: 'unmarkClientInvoiceAsPaid',
+			action: 'Unmark a client invoice as paid',
+		},
+		{
+			name: 'Mark Client Invoice as Paid',
+			value: 'markClientInvoiceAsPaid',
+			action: 'Mark a client invoice as paid',
+		},
+		{
+			name: 'Send Client Invoice',
+			value: 'sendClientInvoice',
+			action: 'Send a client invoice by email',
+		},
 	],
 	default: 'listInvoices',
 },
@@ -550,12 +580,85 @@ export const clientsInvoicesOperations: INodeProperties[] = [
 				],
 				operation: [
 					'showClientInvoice',
+					'deleteClientInvoice',
+					'finalizeClientInvoice',
+					'cancelClientInvoice',
+					'unmarkClientInvoiceAsPaid',
+					'markClientInvoiceAsPaid',
+					'sendClientInvoice',
 				],
 			},
 		},
 		default: '',
 		required: true,
 		description: 'The unique identifier of the invoice to show',
+	},
+	{
+		displayName: 'Paid At',
+		name: 'paidAt',
+		type: 'dateTime',
+		displayOptions: {
+			show: {
+				resource: ['clientsInvoices'],
+				operation: ['markClientInvoiceAsPaid'],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'Payment date',
+	},
+	{
+		displayName: 'Send To',
+		name: 'sendTo',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['clientsInvoices'],
+				operation: ['sendClientInvoice'],
+			},
+		},
+		default: '',
+		required: true,
+		description: 'Comma-separated list of recipient emails',
+	},
+	{
+		displayName: 'Email Title',
+		name: 'emailTitle',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['clientsInvoices'],
+				operation: ['sendClientInvoice'],
+			},
+		},
+		default: '',
+		description: 'Custom email title',
+	},
+	{
+		displayName: 'Email Body',
+		name: 'emailBody',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['clientsInvoices'],
+				operation: ['sendClientInvoice'],
+			},
+		},
+		default: '',
+		description: 'Custom email body',
+	},
+	{
+		displayName: 'Copy to Self',
+		name: 'copyToSelf',
+		type: 'boolean',
+		displayOptions: {
+			show: {
+				resource: ['clientsInvoices'],
+				operation: ['sendClientInvoice'],
+			},
+		},
+		default: true,
+		description: 'Whether to copy the authenticated user',
 	},
 
 ];

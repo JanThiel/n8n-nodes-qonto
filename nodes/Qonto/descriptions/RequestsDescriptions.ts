@@ -26,6 +26,21 @@ export const requestsOperations: INodeProperties[] = [
 				action: 'List requests a requests',
 			},
 			{
+				name: 'Create Flash Card Request',
+				value: 'createFlashCardRequest',
+				action: 'Create a flash card request',
+			},
+			{
+				name: 'Create Virtual Card Request',
+				value: 'createVirtualCardRequest',
+				action: 'Create a virtual card request',
+			},
+			{
+				name: 'Create Multi Transfer Request',
+				value: 'createMultiTransferRequest',
+				action: 'Create a multi transfer request',
+			},
+			{
 				name: 'Approve a Request',
 				value: 'approveARequest',
 				action: 'Approve a request a requests',
@@ -131,6 +146,141 @@ export const requestsOperations: INodeProperties[] = [
 			default: '',
 		},
 	],
+	},
+
+// ------------------------
+//      REQUESTS - Create flash card request
+// ------------------------
+	{
+		displayName: 'Note',
+		name: 'note',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['requests'],
+				operation: ['createFlashCardRequest'],
+			},
+		},
+		description: 'Optional note attached to the request',
+	},
+	{
+		displayName: 'Payment Lifespan Limit',
+		name: 'payment_lifespan_limit',
+		type: 'number',
+		default: 0,
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['requests'],
+				operation: ['createFlashCardRequest'],
+			},
+		},
+		description: 'Total limit amount in cents',
+	},
+	{
+		displayName: 'Pre Expires At',
+		name: 'pre_expires_at',
+		type: 'dateTime',
+		default: '',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['requests'],
+				operation: ['createFlashCardRequest'],
+			},
+		},
+		description: 'Expiration datetime of the requested card',
+	},
+
+// ------------------------
+//      REQUESTS - Create virtual card request
+// ------------------------
+	{
+		displayName: 'Note',
+		name: 'note',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['requests'],
+				operation: ['createVirtualCardRequest'],
+			},
+		},
+		description: 'Optional note attached to the request',
+	},
+	{
+		displayName: 'Payment Monthly Limit',
+		name: 'payment_monthly_limit',
+		type: 'number',
+		default: 0,
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['requests'],
+				operation: ['createVirtualCardRequest'],
+			},
+		},
+		description: 'Monthly limit amount in cents',
+	},
+
+// ------------------------
+//      REQUESTS - Create multi transfer request
+// ------------------------
+	{
+		displayName: 'Debit IBAN',
+		name: 'debit_iban',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['requests'],
+				operation: ['createMultiTransferRequest'],
+			},
+		},
+		default: '',
+		description: 'IBAN of the account to debit',
+	},
+	{
+		displayName: 'Scheduled Date',
+		name: 'scheduled_date',
+		type: 'dateTime',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['requests'],
+				operation: ['createMultiTransferRequest'],
+			},
+		},
+		default: '',
+		description: 'Execution date for the transfer batch',
+	},
+	{
+		displayName: 'Note',
+		name: 'note',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['requests'],
+				operation: ['createMultiTransferRequest'],
+			},
+		},
+		description: 'Optional note attached to the request',
+	},
+	{
+		displayName: 'Transfers (JSON)',
+		name: 'transfers',
+		type: 'json',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['requests'],
+				operation: ['createMultiTransferRequest'],
+			},
+		},
+		default: '[]',
+		description: 'Array of transfer objects',
 	},
 
 // ------------------------

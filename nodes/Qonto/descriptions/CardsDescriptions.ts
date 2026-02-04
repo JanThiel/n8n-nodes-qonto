@@ -27,6 +27,11 @@ value: 'createCard',
 action: 'Create a card',
 },
 {
+name: 'Bulk Create Cards',
+value: 'createCardsBulk',
+action: 'Bulk create cards',
+},
+{
 name: 'List Cards',
 value: 'listCards',
 action: 'List cards',
@@ -55,6 +60,31 @@ action: 'Update card limits',
 name: 'Update Card Options',
 value: 'updateCardOptions',
 action: 'Update card options',
+},
+{
+name: 'Report Card as Lost',
+value: 'reportCardLost',
+action: 'Report a card as lost',
+},
+{
+name: 'Report Card as Stolen',
+value: 'reportCardStolen',
+action: 'Report a card as stolen',
+},
+{
+name: 'Discard Virtual Card',
+value: 'discardVirtualCard',
+action: 'Discard a virtual card',
+},
+{
+name: 'Update Card Restrictions',
+value: 'updateCardRestrictions',
+action: 'Update card restrictions',
+},
+{
+name: 'Update Card Nickname',
+value: 'updateCardNickname',
+action: 'Update card nickname',
 },
 ],
 default: 'listCards',
@@ -356,6 +386,24 @@ description: 'Whether to ship physical card to business address',
 },
 ],
 },
+{
+displayName: 'Cards (JSON)',
+name: 'cardsPayload',
+type: 'json',
+displayOptions: {
+show: {
+resource: [
+'cards',
+],
+operation: [
+'createCardsBulk',
+],
+},
+},
+default: '[]',
+required: true,
+description: 'Array payload sent as cards for bulk creation',
+},
 
 // ------------------------
 //      cards - Retrieve card data view URL
@@ -592,5 +640,63 @@ operation: [
 default: '',
 required: true,
 description: 'The unique identifier of the card to unlock',
+},
+{
+displayName: 'Card ID',
+name: 'cardId',
+type: 'string',
+displayOptions: {
+show: {
+resource: [
+'cards',
+],
+operation: [
+'reportCardLost',
+'reportCardStolen',
+'discardVirtualCard',
+'updateCardRestrictions',
+'updateCardNickname',
+],
+},
+},
+default: '',
+required: true,
+description: 'The unique identifier of the card',
+},
+{
+displayName: 'Restrictions (JSON)',
+name: 'restrictionsPayload',
+type: 'json',
+displayOptions: {
+show: {
+resource: [
+'cards',
+],
+operation: [
+'updateCardRestrictions',
+],
+},
+},
+default: '{\"card\":{\"active_days\":[1,2,3,4,5],\"categories\":[]}}',
+required: true,
+description: 'Card restriction payload',
+},
+{
+displayName: 'Nickname',
+name: 'nickname',
+type: 'string',
+displayOptions: {
+show: {
+resource: [
+'cards',
+],
+operation: [
+'updateCardNickname',
+],
+},
+},
+default: '',
+required: true,
+description: 'New nickname for the card',
 },
 ];

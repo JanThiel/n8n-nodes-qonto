@@ -16,21 +16,28 @@ import {
 import {
 	attachmentOperations,
 	attachmentsInATransactionOperations,
+	bankAccountsOperations,
 	beneficiariesOperations,
 	externalTransfersOperations,
 	internalTransactionsOperations,
 	labelsOperations,
 	membershipsOperations,
 	organizationsOperations,
+	paymentLinksOperations,
+	quotesOperations,
 	requestsOperations,
+	sepaTransfersOperations,
 	transactionsOperations,
 	supplierInvoicesOperations,
   clientsInvoicesOperations,
-  creditNotesOperations,
+	creditNotesOperations,
+  einvoicingOperations,
   clientsOperations,
   teamsOperations,
   statementsOperations,
   insuranceContractsOperations,
+  internationalTransfersOperations,
+  webhookSubscriptionsOperations,
   cardsOperations,
 } from './descriptions';
 
@@ -46,6 +53,17 @@ function uuid(): string {
 		const v = c === 'x' ? r : (r & 0x3 | 0x8);
 		return v.toString(16);
 	});
+}
+
+function parseJsonParameter(value: unknown): IDataObject {
+	if (typeof value === 'string') {
+		const parsed = JSON.parse(value) as IDataObject;
+		return parsed && typeof parsed === 'object' ? parsed : {};
+	}
+	if (value && typeof value === 'object') {
+		return value as IDataObject;
+	}
+	return {};
 }
 
 export class Qonto implements INodeType {
@@ -108,22 +126,29 @@ export class Qonto implements INodeType {
 				options: [
 					{ name: 'Attachment', value: 'attachment' },
 					{ name: 'Attachments in a Transaction', value: 'attachmentsInATransaction' },
+					{ name: 'Business Account', value: 'bankAccounts' },
 					{ name: 'Beneficiary', value: 'beneficiaries' },
 					{ name: 'Card', value: 'cards' },
 					{ name: 'Client', value: 'clients' },
 					{ name: 'Client Invoice', value: 'clientsInvoices' },
-					{ name: 'Credit Note', value: 'creditNotes' },
-					{ name: 'External Transfer', value: 'externalTransfers' },
+						{ name: 'Credit Note', value: 'creditNotes' },
+						{ name: 'E-Invoicing', value: 'einvoicing' },
+						{ name: 'External Transfer', value: 'externalTransfers' },
 					{ name: 'Insurance Contract', value: 'insuranceContracts' },
+					{ name: 'International Transfer', value: 'internationalTransfers' },
 					{ name: 'Internal Transaction', value: 'internalTransactions' },
 					{ name: 'Label', value: 'labels' },
 					{ name: 'Membership', value: 'memberships' },
-					{ name: 'Organization', value: 'organizations' },
+						{ name: 'Organization', value: 'organizations' },
+						{ name: 'Payment Link', value: 'paymentLinks' },
+						{ name: 'Quote', value: 'quotes' },
 					{ name: 'Request', value: 'requests' },
+					{ name: 'SEPA Transfer', value: 'sepaTransfers' },
 					{ name: 'Statement', value: 'statements' },
 					{ name: 'Supplier Invoice', value: 'supplierInvoices' },
 					{ name: 'Team', value: 'teams' },
 					{ name: 'Transaction', value: 'transactions' },
+					{ name: 'Webhook Subscription', value: 'webhookSubscriptions' },
 				],
 				default: 'organizations',
 				required: true,
@@ -135,16 +160,23 @@ export class Qonto implements INodeType {
 			...membershipsOperations,
 			...organizationsOperations,
 			...attachmentsInATransactionOperations,
+			...bankAccountsOperations,
 			...transactionsOperations,
 			...internalTransactionsOperations,
 			...requestsOperations,
+			...sepaTransfersOperations,
 			...supplierInvoicesOperations,
-      ...clientsInvoicesOperations,
-      ...creditNotesOperations,
-      ...clientsOperations,
+	      ...clientsInvoicesOperations,
+	      ...creditNotesOperations,
+	      ...einvoicingOperations,
+	      ...clientsOperations,
       ...teamsOperations,
       ...statementsOperations,
       ...insuranceContractsOperations,
+	      ...internationalTransfersOperations,
+	      ...webhookSubscriptionsOperations,
+	      ...paymentLinksOperations,
+	      ...quotesOperations,
       ...cardsOperations,
 		],
 	};
@@ -320,6 +352,180 @@ if (resource === 'externalTransfers') {
 }
 
 // ------------------------
+//      SEPA TRANSFERS
+// ------------------------
+if (resource === 'sepaTransfers') {
+	if (operation === 'listSepaTransfers') {
+		const endpoint = 'sepa/transfers';
+		const queryParams = parseJsonParameter(this.getNodeParameter('query', i, {}) as unknown);
+		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, queryParams, i);
+	}
+
+	if (operation === 'showSepaTransfer') {
+		const transferId = this.getNodeParameter('transferId', i) as string;
+		const endpoint = `sepa/transfers/${transferId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+
+	if (operation === 'createSepaTransfer') {
+		const endpoint = 'sepa/transfers';
+		const body = parseJsonParameter(this.getNodeParameter('transferPayload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'cancelSepaTransfer') {
+		const transferId = this.getNodeParameter('transferId', i) as string;
+		const endpoint = `sepa/transfers/${transferId}/cancel`;
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, {}, {});
+	}
+
+	if (operation === 'downloadSepaTransferProof') {
+		const transferId = this.getNodeParameter('transferId', i) as string;
+		const endpoint = `sepa/transfers/${transferId}/download_proof`;
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, {}, {});
+	}
+
+	if (operation === 'listSepaBulkTransfers') {
+		const endpoint = 'sepa/bulk_transfers';
+		const queryParams = parseJsonParameter(this.getNodeParameter('query', i, {}) as unknown);
+		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, queryParams, i);
+	}
+
+	if (operation === 'showSepaBulkTransfer') {
+		const bulkTransferId = this.getNodeParameter('bulkTransferId', i) as string;
+		const endpoint = `sepa/bulk_transfers/${bulkTransferId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+
+	if (operation === 'createSepaBulkTransfer') {
+		const endpoint = 'sepa/bulk_transfers';
+		const body = parseJsonParameter(this.getNodeParameter('bulkTransferPayload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'listSepaRecurringTransfers') {
+		const endpoint = 'sepa/recurring_transfers';
+		const queryParams = parseJsonParameter(this.getNodeParameter('query', i, {}) as unknown);
+		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, queryParams, i);
+	}
+
+	if (operation === 'showSepaRecurringTransfer') {
+		const recurringTransferId = this.getNodeParameter('recurringTransferId', i) as string;
+		const endpoint = `sepa/recurring_transfers/${recurringTransferId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+
+	if (operation === 'createSepaRecurringTransfer') {
+		const endpoint = 'sepa/recurring_transfers';
+		const body = parseJsonParameter(this.getNodeParameter('recurringTransferPayload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'cancelSepaRecurringTransfer') {
+		const recurringTransferId = this.getNodeParameter('recurringTransferId', i) as string;
+		const endpoint = `sepa/recurring_transfers/${recurringTransferId}/cancel`;
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, {}, {});
+	}
+
+	if (operation === 'verifySepaPayee') {
+		const endpoint = 'sepa/verify_payee';
+		const body = parseJsonParameter(this.getNodeParameter('verifyPayeePayload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'bulkVerifySepaPayee') {
+		const endpoint = 'sepa/bulk_verify_payee';
+		const body = parseJsonParameter(this.getNodeParameter('bulkVerifyPayeePayload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'skipVerifySepaPayee') {
+		const endpoint = 'sepa/skip_verify_payee';
+		const body = parseJsonParameter(this.getNodeParameter('skipVerifyPayeePayload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+}
+
+// ------------------------
+//      INTERNATIONAL TRANSFERS
+// ------------------------
+if (resource === 'internationalTransfers') {
+	if (operation === 'checkInternationalEligibility') {
+		const endpoint = 'international/eligibility';
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+
+	if (operation === 'getInternationalCurrencies') {
+		const source = this.getNodeParameter('source', i, '') as string;
+		const q: IDataObject = {};
+		if (source) {
+			q.source = source;
+		}
+		const endpoint = 'international/currencies';
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, q);
+	}
+
+	if (operation === 'createInternationalQuote') {
+		const endpoint = 'international/quotes';
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'listInternationalBeneficiaryRequirements') {
+		const endpoint = 'international/beneficiaries/requirements';
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'listInternationalBeneficiaries') {
+		const endpoint = 'international/beneficiaries';
+		const q = parseJsonParameter(this.getNodeParameter('query', i, {}) as unknown);
+		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, q, i);
+	}
+
+	if (operation === 'createInternationalBeneficiary') {
+		const endpoint = 'international/beneficiaries';
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'updateInternationalBeneficiary') {
+		const beneficiaryId = this.getNodeParameter('beneficiaryId', i) as string;
+		const endpoint = `international/beneficiaries/${beneficiaryId}`;
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'PUT', endpoint, body, {});
+	}
+
+	if (operation === 'deleteInternationalBeneficiary') {
+		const beneficiaryId = this.getNodeParameter('beneficiaryId', i) as string;
+		const endpoint = `international/beneficiaries/${beneficiaryId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'DELETE', endpoint, {}, {});
+	}
+
+	if (operation === 'createInternationalTransfer') {
+		const endpoint = 'international/transfers';
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'listInternationalTransferRequirements') {
+		const endpoint = 'international/transfers/requirements';
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+}
+
+// ------------------------
+//      E-INVOICING
+// ------------------------
+if (resource === 'einvoicing') {
+	if (operation === 'getEinvoicingSettings') {
+		const endpoint = 'einvoicing/settings';
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+}
+
+// ------------------------
 //      BENEFICIARIES
 // ------------------------
 if (resource === 'beneficiaries') {
@@ -329,7 +535,7 @@ if (resource === 'beneficiaries') {
 	// GET /beneficiaries
 	// -----------------------------------------
 	if (operation === 'listBeneficiaries') {
-		const endpoint = 'beneficiaries';
+		const endpoint = 'sepa/beneficiaries';
 
 		const filters = this.getNodeParameter('filters', i) as IDataObject;
 		if (!isEmpty(filters)) {
@@ -374,7 +580,7 @@ if (resource === 'beneficiaries') {
 	// -----------------------------------------
 	if (operation === 'showBeneficiary') {
 		const id = this.getNodeParameter('id', i) as string;
-		const endpoint = `beneficiaries/${id}`;
+		const endpoint = `sepa/beneficiaries/${id}`;
 
 		responseData = await qontoApiRequest.call(
 			this,
@@ -643,13 +849,11 @@ if (resource === 'memberships') {
 
 	// ------------------------
 	// GET A SINGLE MEMBERSHIP
-	// GET /memberships/:membership_id
+	// GET /membership
 	// ------------------------
 	if (operation === 'getMembership') {
-		const membershipId = this.getNodeParameter('membership_id', i) as string;
-		const endpoint = `memberships/${membershipId}`;
-
-		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, {}, i);
+		const endpoint = 'membership';
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
 	}
 
 	// ------------------------
@@ -710,6 +914,51 @@ if (resource === 'organizations') {
 			{},
 			query,
 		);
+	}
+}
+
+// ------------------------
+//      BUSINESS ACCOUNTS
+// ------------------------
+if (resource === 'bankAccounts') {
+	if (operation === 'listBankAccounts') {
+		const endpoint = 'bank_accounts';
+		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, {}, i);
+	}
+
+	if (operation === 'createBankAccount') {
+		const endpoint = 'bank_accounts';
+		const accountName = this.getNodeParameter('accountName', i) as string;
+		const body: IDataObject = {
+			bank_account: {
+				name: accountName,
+			},
+		};
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'showBankAccount') {
+		const accountId = this.getNodeParameter('accountId', i) as string;
+		const endpoint = `bank_accounts/${accountId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+
+	if (operation === 'updateBankAccount') {
+		const accountId = this.getNodeParameter('accountId', i) as string;
+		const accountName = this.getNodeParameter('accountName', i) as string;
+		const endpoint = `bank_accounts/${accountId}`;
+		const body: IDataObject = {
+			bank_account: {
+				name: accountName,
+			},
+		};
+		responseData = await qontoApiRequest.call(this, headers, 'PATCH', endpoint, body, {});
+	}
+
+	if (operation === 'closeBankAccount') {
+		const accountId = this.getNodeParameter('accountId', i) as string;
+		const endpoint = `bank_accounts/${accountId}/close`;
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, {}, {});
 	}
 }
 
@@ -941,6 +1190,102 @@ if (resource === 'internalTransactions') {
 }
 
 // ------------------------
+//      PAYMENT LINKS
+// ------------------------
+if (resource === 'paymentLinks') {
+	if (operation === 'connectPaymentLinksProvider') {
+		const endpoint = 'payment_links/connections';
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'getPaymentLinksConnectionStatus') {
+		const endpoint = 'payment_links/connections';
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+
+	if (operation === 'createPaymentLink') {
+		const endpoint = 'payment_links';
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'listPaymentLinks') {
+		const endpoint = 'payment_links';
+		const q = parseJsonParameter(this.getNodeParameter('query', i, {}) as unknown);
+		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, q, i);
+	}
+
+	if (operation === 'showPaymentLink') {
+		const paymentLinkId = this.getNodeParameter('paymentLinkId', i) as string;
+		const endpoint = `payment_links/${paymentLinkId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+
+	if (operation === 'deactivatePaymentLink') {
+		const paymentLinkId = this.getNodeParameter('paymentLinkId', i) as string;
+		const endpoint = `payment_links/${paymentLinkId}/deactivate`;
+		responseData = await qontoApiRequest.call(this, headers, 'PATCH', endpoint, {}, {});
+	}
+
+	if (operation === 'listPaymentLinkPayments') {
+		const paymentLinkId = this.getNodeParameter('paymentLinkId', i) as string;
+		const endpoint = `payment_links/${paymentLinkId}/payments`;
+		const q = parseJsonParameter(this.getNodeParameter('query', i, {}) as unknown);
+		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, q, i);
+	}
+
+	if (operation === 'listPaymentLinkMethods') {
+		const endpoint = 'payment_links/payment_methods';
+		const q = parseJsonParameter(this.getNodeParameter('query', i, {}) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, q);
+	}
+}
+
+// ------------------------
+//      QUOTES
+// ------------------------
+if (resource === 'quotes') {
+	if (operation === 'listQuotes') {
+		const endpoint = 'quotes';
+		const q = parseJsonParameter(this.getNodeParameter('query', i, {}) as unknown);
+		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, q, i);
+	}
+
+	if (operation === 'createQuote') {
+		const endpoint = 'quotes';
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'sendQuote') {
+		const quoteId = this.getNodeParameter('quoteId', i) as string;
+		const endpoint = `quotes/${quoteId}/send`;
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'showQuote') {
+		const quoteId = this.getNodeParameter('quoteId', i) as string;
+		const endpoint = `quotes/${quoteId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+
+	if (operation === 'updateQuote') {
+		const quoteId = this.getNodeParameter('quoteId', i) as string;
+		const endpoint = `quotes/${quoteId}`;
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'PATCH', endpoint, body, {});
+	}
+
+	if (operation === 'deleteQuote') {
+		const quoteId = this.getNodeParameter('quoteId', i) as string;
+		const endpoint = `quotes/${quoteId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'DELETE', endpoint, {}, {});
+	}
+}
+
+// ------------------------
 //      REQUESTS
 // ------------------------
 if (resource === 'requests') {
@@ -979,6 +1324,58 @@ if (resource === 'requests') {
 			{},
 			query,
 		);
+	}
+
+	// -----------------------------------------
+	// CREATE FLASH CARD REQUEST
+	// POST /requests/flash_cards
+	// -----------------------------------------
+	if (operation === 'createFlashCardRequest') {
+		const endpoint = 'requests/flash_cards';
+		const body: IDataObject = {
+			request_flash_card: {
+				note: this.getNodeParameter('note', i, '') as string,
+				payment_lifespan_limit: this.getNodeParameter('payment_lifespan_limit', i) as number,
+				pre_expires_at: formatDateTime(this.getNodeParameter('pre_expires_at', i) as string),
+			},
+		};
+
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	// -----------------------------------------
+	// CREATE VIRTUAL CARD REQUEST
+	// POST /requests/virtual_cards
+	// -----------------------------------------
+	if (operation === 'createVirtualCardRequest') {
+		const endpoint = 'requests/virtual_cards';
+		const body: IDataObject = {
+			request_virtual_card: {
+				note: this.getNodeParameter('note', i, '') as string,
+				payment_monthly_limit: this.getNodeParameter('payment_monthly_limit', i) as number,
+			},
+		};
+
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	// -----------------------------------------
+	// CREATE MULTI TRANSFER REQUEST
+	// POST /requests/multi_transfers
+	// -----------------------------------------
+	if (operation === 'createMultiTransferRequest') {
+		const endpoint = 'requests/multi_transfers';
+		const transfers = this.getNodeParameter('transfers', i) as IDataObject[];
+		const body: IDataObject = {
+			request_multi_transfer: {
+				note: this.getNodeParameter('note', i, '') as string,
+				debit_iban: this.getNodeParameter('debit_iban', i) as string,
+				scheduled_date: formatDate(this.getNodeParameter('scheduled_date', i) as string),
+				transfers,
+			},
+		};
+
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
 	}
 
 	// -----------------------------------------
@@ -1079,6 +1476,24 @@ if (resource === 'supplierInvoices') {
 			{},
 			query,
 			i,
+		);
+	}
+
+	// -----------------------------------------
+	// RETRIEVE A SUPPLIER INVOICE
+	// GET /supplier_invoices/:id
+	// -----------------------------------------
+	if (operation === 'showSupplierInvoice') {
+		const supplierInvoiceId = this.getNodeParameter('supplierInvoiceId', i) as string;
+		const endpoint = `supplier_invoices/${supplierInvoiceId}`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'GET',
+			endpoint,
+			{},
+			{},
 		);
 	}
 
@@ -1325,6 +1740,132 @@ if (resource === 'clientsInvoices') {
 			'GET',
 			endpoint,
 			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// DELETE A CLIENT INVOICE
+	// DELETE /client_invoices/:id
+	// -----------------------------------------
+	if (operation === 'deleteClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'DELETE',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// FINALIZE A CLIENT INVOICE
+	// POST /client_invoices/:id/finalize
+	// -----------------------------------------
+	if (operation === 'finalizeClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}/finalize`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// CANCEL A CLIENT INVOICE
+	// POST /client_invoices/:id/mark_as_canceled
+	// -----------------------------------------
+	if (operation === 'cancelClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}/mark_as_canceled`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// UNMARK A CLIENT INVOICE AS PAID
+	// POST /client_invoices/:id/unmark_as_paid
+	// -----------------------------------------
+	if (operation === 'unmarkClientInvoiceAsPaid') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}/unmark_as_paid`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// MARK A CLIENT INVOICE AS PAID
+	// POST /client_invoices/:id/mark_as_paid
+	// -----------------------------------------
+	if (operation === 'markClientInvoiceAsPaid') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}/mark_as_paid`;
+		const paidAt = this.getNodeParameter('paidAt', i) as string;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			{ paid_at: formatDate(paidAt) },
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// SEND A CLIENT INVOICE VIA EMAIL
+	// POST /client_invoices/:id/send
+	// -----------------------------------------
+	if (operation === 'sendClientInvoice') {
+		const invoiceId = this.getNodeParameter('invoiceId', i) as string;
+		const endpoint = `client_invoices/${invoiceId}/send`;
+
+		const sendToRaw = this.getNodeParameter('sendTo', i) as string;
+		const send_to = sendToRaw.split(',').map((email) => email.trim()).filter(Boolean);
+
+		const body: IDataObject = {
+			send_to,
+			copy_to_self: this.getNodeParameter('copyToSelf', i) as boolean,
+		};
+
+		const emailTitle = this.getNodeParameter('emailTitle', i, '') as string;
+		const emailBody = this.getNodeParameter('emailBody', i, '') as string;
+		if (emailTitle) {
+			body.email_title = emailTitle;
+		}
+		if (emailBody) {
+			body.email_body = emailBody;
+		}
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			body,
 			{},
 		);
 	}
@@ -1612,6 +2153,24 @@ if (resource === 'clients') {
 			'PATCH',
 			endpoint,
 			body,
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// DELETE A CLIENT
+	// DELETE /clients/:id
+	// -----------------------------------------
+	if (operation === 'deleteClient') {
+		const clientId = this.getNodeParameter('clientId', i) as string;
+		const endpoint = `clients/${clientId}`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'DELETE',
+			endpoint,
+			{},
 			{},
 		);
 	}
@@ -1942,6 +2501,41 @@ if (resource === 'insuranceContracts') {
 	}
 }
 
+// ------------------------
+//      WEBHOOK SUBSCRIPTIONS
+// ------------------------
+if (resource === 'webhookSubscriptions') {
+	if (operation === 'listWebhookSubscriptions') {
+		const endpoint = 'webhook_subscriptions';
+		responseData = await handleListing.call(this, headers, 'GET', endpoint, {}, {}, i);
+	}
+
+	if (operation === 'createWebhookSubscription') {
+		const endpoint = 'webhook_subscriptions';
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'POST', endpoint, body, {});
+	}
+
+	if (operation === 'showWebhookSubscription') {
+		const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+		const endpoint = `webhook_subscriptions/${subscriptionId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'GET', endpoint, {}, {});
+	}
+
+	if (operation === 'updateWebhookSubscription') {
+		const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+		const endpoint = `webhook_subscriptions/${subscriptionId}`;
+		const body = parseJsonParameter(this.getNodeParameter('payload', i) as unknown);
+		responseData = await qontoApiRequest.call(this, headers, 'PUT', endpoint, body, {});
+	}
+
+	if (operation === 'deleteWebhookSubscription') {
+		const subscriptionId = this.getNodeParameter('subscriptionId', i) as string;
+		const endpoint = `webhook_subscriptions/${subscriptionId}`;
+		responseData = await qontoApiRequest.call(this, headers, 'DELETE', endpoint, {}, {});
+	}
+}
+
 
 // ------------------------
 //      CARDS
@@ -2045,6 +2639,27 @@ if (resource === 'cards') {
 		headers = {
 			...headers,
 			'Content-Type': 'application/json',
+		};
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'POST',
+			endpoint,
+			body,
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// BULK CREATE CARDS
+	// POST /cards/bulk
+	// -----------------------------------------
+	if (operation === 'createCardsBulk') {
+		const endpoint = 'cards/bulk';
+		const cards = this.getNodeParameter('cardsPayload', i) as IDataObject[];
+		const body: IDataObject = {
+			cards,
 		};
 
 		responseData = await qontoApiRequest.call(
@@ -2203,6 +2818,103 @@ if (resource === 'cards') {
 			'PUT',
 			endpoint,
 			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// REPORT CARD AS LOST
+	// PUT /cards/:id/lost
+	// -----------------------------------------
+	if (operation === 'reportCardLost') {
+		const cardId = this.getNodeParameter('cardId', i) as string;
+		const endpoint = `cards/${cardId}/lost`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'PUT',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// REPORT CARD AS STOLEN
+	// PUT /cards/:id/stolen
+	// -----------------------------------------
+	if (operation === 'reportCardStolen') {
+		const cardId = this.getNodeParameter('cardId', i) as string;
+		const endpoint = `cards/${cardId}/stolen`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'PUT',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// DISCARD VIRTUAL CARD
+	// PUT /cards/:id/discard
+	// -----------------------------------------
+	if (operation === 'discardVirtualCard') {
+		const cardId = this.getNodeParameter('cardId', i) as string;
+		const endpoint = `cards/${cardId}/discard`;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'PUT',
+			endpoint,
+			{},
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// UPDATE CARD RESTRICTIONS
+	// PATCH /cards/:id/restrictions
+	// -----------------------------------------
+	if (operation === 'updateCardRestrictions') {
+		const cardId = this.getNodeParameter('cardId', i) as string;
+		const endpoint = `cards/${cardId}/restrictions`;
+		const body = this.getNodeParameter('restrictionsPayload', i) as IDataObject;
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'PATCH',
+			endpoint,
+			body,
+			{},
+		);
+	}
+
+	// -----------------------------------------
+	// UPDATE CARD NICKNAME
+	// PATCH /cards/:id/nickname
+	// -----------------------------------------
+	if (operation === 'updateCardNickname') {
+		const cardId = this.getNodeParameter('cardId', i) as string;
+		const endpoint = `cards/${cardId}/nickname`;
+		const nickname = this.getNodeParameter('nickname', i) as string;
+		const body: IDataObject = {
+			card: {
+				nickname,
+			},
+		};
+
+		responseData = await qontoApiRequest.call(
+			this,
+			headers,
+			'PATCH',
+			endpoint,
+			body,
 			{},
 		);
 	}

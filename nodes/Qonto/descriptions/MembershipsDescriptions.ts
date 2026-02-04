@@ -36,7 +36,7 @@ value: 'createMembership',
 action: 'Create and invite a new membership',
 },
 ],
-default: 'listMemberships',
+default: 'getMembership',
 },
 
 // ------------------------
@@ -81,28 +81,6 @@ minValue: 1,
 },
 default: 50,
 description: 'Max number of results to return',
-},
-
-// ------------------------
-//      MEMBERSHIPS - Get details of a single membership
-// ------------------------
-{
-displayName: 'Membership ID',
-name: 'membership_id',
-type: 'string',
-default: '',
-required: true,
-description: 'The unique identifier of the membership',
-displayOptions: {
-show: {
-resource: [
-'memberships',
-],
-operation: [
-'getMembership',
-],
-},
-},
 },
 
 // ------------------------
