@@ -12,11 +12,27 @@ export const webhookSubscriptionsOperations: INodeProperties[] = [
 			},
 		},
 		options: [
-			{ name: 'List Webhook Subscriptions', value: 'listWebhookSubscriptions', action: 'List webhook subscriptions' },
-			{ name: 'Create Webhook Subscription', value: 'createWebhookSubscription', action: 'Create a webhook subscription' },
-			{ name: 'Get Webhook Subscription', value: 'showWebhookSubscription', action: 'Get a webhook subscription' },
+			{
+				name: 'Create Webhook Subscription',
+				value: 'createWebhookSubscription',
+				action: 'Create a webhook subscription',
+			},
+			{
+				name: 'Delete Webhook Subscription',
+				value: 'deleteWebhookSubscription',
+				action: 'Delete a webhook subscription',
+			},
+			{
+				name: 'Get Webhook Subscription',
+				value: 'showWebhookSubscription',
+				action: 'Get a webhook subscription',
+			},
+			{
+				name: 'List Webhook Subscriptions',
+				value: 'listWebhookSubscriptions',
+				action: 'List webhook subscriptions',
+			},
 			{ name: 'Update Webhook Subscription', value: 'updateWebhookSubscription', action: 'Update a webhook subscription' },
-			{ name: 'Delete Webhook Subscription', value: 'deleteWebhookSubscription', action: 'Delete a webhook subscription' },
 		],
 		default: 'listWebhookSubscriptions',
 	},
@@ -57,7 +73,11 @@ export const webhookSubscriptionsOperations: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['webhookSubscriptions'],
-				operation: ['showWebhookSubscription', 'updateWebhookSubscription', 'deleteWebhookSubscription'],
+				operation: [
+					'showWebhookSubscription',
+					'updateWebhookSubscription',
+					'deleteWebhookSubscription',
+				],
 			},
 		},
 	},

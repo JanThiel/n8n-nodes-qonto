@@ -12,7 +12,11 @@ export const einvoicingOperations: INodeProperties[] = [
 			},
 		},
 		options: [
-			{ name: 'Get E-Invoicing Settings', value: 'getEinvoicingSettings', action: 'Get e-invoicing settings' },
+			{
+				name: 'Get E-Invoicing Settings',
+				value: 'getEinvoicingSettings',
+				action: 'Get e invoicing settings',
+			},
 		],
 		default: 'getEinvoicingSettings',
 	},

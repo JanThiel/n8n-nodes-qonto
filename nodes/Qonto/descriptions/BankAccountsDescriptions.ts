@@ -12,11 +12,19 @@ export const bankAccountsOperations: INodeProperties[] = [
 			},
 		},
 		options: [
-			{ name: 'List Business Accounts', value: 'listBankAccounts', action: 'List business accounts' },
-			{ name: 'Create Business Account', value: 'createBankAccount', action: 'Create a business account' },
-			{ name: 'Get Business Account', value: 'showBankAccount', action: 'Get a business account' },
-			{ name: 'Update Business Account', value: 'updateBankAccount', action: 'Update a business account' },
 			{ name: 'Close Business Account', value: 'closeBankAccount', action: 'Close a business account' },
+			{
+				name: 'Create Business Account',
+				value: 'createBankAccount',
+				action: 'Create a business account',
+			},
+			{ name: 'Get Business Account', value: 'showBankAccount', action: 'Get a business account' },
+			{
+				name: 'List Business Accounts',
+				value: 'listBankAccounts',
+				action: 'List business accounts',
+			},
+			{ name: 'Update Business Account', value: 'updateBankAccount', action: 'Update a business account' },
 		],
 		default: 'listBankAccounts',
 	},
